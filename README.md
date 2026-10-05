@@ -15,9 +15,10 @@
   - Mobile Number & Email
   - Blood Group & Emergency Contact information
   - Password hashing & secure storage
+- **Login**: Secure JWT authentication with first-login password setup
+- **Forgot / Reset Password**: Request a short-lived reset token by email or Service ID, then set a new permanent password
 
 ### ⏳ Pending Features (To-Do List)
-- 🔑 **Login**: Secure user authentication (JWT / session token based)
 - 🚪 **Logout**: Session termination & token revocation
 - 👥 **User Lists**: Directory search and filter officers by rank, department, or location
 - 💬 **User Chat**: Encrypted 1-on-1 direct messaging
@@ -117,6 +118,18 @@ The API will be available at:
 - **Server**: `http://127.0.0.1:8000`
 - **Interactive API Docs (Swagger UI)**: `http://127.0.0.1:8000/docs`
 - **ReDoc**: `http://127.0.0.1:8000/redoc`
+
+---
+
+## 🔐 Forgot Password Flow
+
+1. **Request reset** — `POST /v1/forgot-password` with `email_or_service_id`.
+   - Always returns a generic success message (no account enumeration).
+   - If an active account matches, a short-lived reset token is emailed in the background.
+2. **Reset password** — `POST /v1/reset-password` with `reset_token` and `new_password`.
+3. **Login** — use `POST /v1/login` with the new password.
+
+Token lifetime is controlled by `PASSWORD_RESET_TOKEN_EXPIRE_MINUTES` (default: `30`).
 
 ---
 

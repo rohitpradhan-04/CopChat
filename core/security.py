@@ -74,3 +74,40 @@ def decode_access_token(token: str) -> dict | None:
         return payload
     except jwt.PyJWTError:
         return None
+
+
+PASSWORD_RESET_TOKEN_TYPE = "password_reset"
+
+
+def create_password_reset_token(
+    user_id: int,
+    email: str,
+    expires_delta: timedelta | None = None,
+) -> str:
+    """Create a short-lived JWT used only for password reset."""
+    if expires_delta is None:
+        expires_delta = timedelta(minutes=config.password_reset_token_expire_minutes)
+
+    return create_access_token(
+        data={
+            "sub": str(user_id),
+            "email": email,
+            "type": PASSWORD_RESET_TOKEN_TYPE,
+        },
+        expires_delta=expires_delta,
+    )
+
+
+def verify_password_reset_token(token: str) -> dict | None:
+    """
+    Validate a password-reset JWT.
+    Returns the payload when valid, otherwise None.
+    """
+    payload = decode_access_token(token)
+    if not payload:
+        return None
+    if payload.get("type") != PASSWORD_RESET_TOKEN_TYPE:
+        return None
+    if not payload.get("sub") or not payload.get("email"):
+        return None
+    return payload
