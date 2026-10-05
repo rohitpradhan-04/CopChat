@@ -70,3 +70,36 @@ class PasswordSetupResponse(BaseModel):
     status: str = "success"
     message: str
     is_first_login: bool = False
+
+
+class ForgotPasswordRequest(BaseModel):
+    email_or_service_id: str = Field(
+        ...,
+        description="Email address or Service ID associated with the account",
+        json_schema_extra={"example": "vikram.sharma@police.gov.in"},
+    )
+
+
+class ForgotPasswordResponse(BaseModel):
+    status: str = "success"
+    message: str
+
+
+class ResetPasswordRequest(BaseModel):
+    reset_token: str = Field(
+        ...,
+        description="Password reset token received via email",
+        json_schema_extra={"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."},
+    )
+    new_password: str = Field(
+        ...,
+        min_length=6,
+        description="New permanent password",
+        json_schema_extra={"example": "NewSecurePass#2026"},
+    )
+
+
+class ResetPasswordResponse(BaseModel):
+    status: str = "success"
+    message: str
+    is_first_login: bool = False
